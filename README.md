@@ -20,11 +20,11 @@ Each ESP32 has a unique hardware ID. You must identify the Slave's ID so the Mas
    `uint8_t address[6] = {0xE8, 0x9F, 0x6D, 0xA8, 0x4E, 0xFE};`
 
 ### Step 2: Program the Slave
-1. Upload `ESP32_Slave.ino` to the same ESP32.
+1. Upload `btontvangerESP/btontvangerESP.ino` to the same ESP32.
 2. This device will now sit and wait for a connection from the Master.
 
 ### Step 3: Program the Master
-1. Open `ESP32_Master.ino`.
+1. Open `btzenderESP/btzenderESP.ino`.
 2. **Paste your MAC address line** (from Step 1) into the top of the sketch.
 3. Upload to your **second** ESP32.
 4. Once powered, the Master will automatically find and lock onto the Slave.
