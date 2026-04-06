@@ -40,7 +40,7 @@ This project creates a transparent, wireless **Bluetooth Classic (SPP)** bridge 
 
 
 ## ⚠️ Troubleshooting & Notes
-* **Grounding:** If connecting to external hardware (not just USB), ensure the **GND** pins of all devices are connected.
+* **Reset both esp32 's:** when starting , maybe clear all old bits and get a fresh new boot start.
 * **Serial Monitor:** Ensure your Serial Monitor is set to **115200 baud** and **"Both NL & CR"** to send data correctly.
 * **Distance:** Bluetooth Classic on the ESP32 works best within 10 meters. For initial testing, keep the boards roughly 1 meter apart.
 * **Power:** If the connection drops frequently, ensure your USB ports provide enough current (Bluetooth can spike power consumption).
