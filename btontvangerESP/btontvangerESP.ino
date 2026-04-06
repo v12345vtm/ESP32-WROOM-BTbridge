@@ -1,15 +1,19 @@
 #include "BluetoothSerial.h"
 
+
+//https://github.com/v12345vtm/ESP32-WROOM-BTbridge/blob/main/btontvangerESP/btontvangerESP.ino
+
+
 BluetoothSerial SerialBT;
 
 void setup() {
   Serial.begin(115200); // For your PC Monitor
   
   // Use Pins 16 (RX) and 17 (TX) for the actual data
-  Serial2.begin(115200, SERIAL_8N1, 16, 17); 
+  //Serial2.begin(115200, SERIAL_8N1, 16, 17); 
   
   SerialBT.begin("ESP32_Bridge_Slave"); 
-  Serial.println("Slave Started. Waiting for Master...");
+  Serial.println("Slave Started. Waiting for Master...to transmit my data");
 }
 
 void loop() {
