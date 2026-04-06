@@ -31,17 +31,7 @@ Each ESP32 has a unique hardware ID. You must identify the Slave's ID so the Mas
 
 ---
 
-## 📁 Included Sketches
-
-### 1. BT_Mac_Finder.ino
-A utility script to retrieve the Bluetooth-specific MAC address. Use this once per Slave device.
-
-### 2. ESP32_Slave.ino
-The "Receiver/Server" that listens for the Master's connection and bridges Bluetooth to USB Serial.
-
-### 3. ESP32_Master.ino
-The "Initiator/Client" that creates the bridge. It requires the Slave's MAC address to be hardcoded for a secure, fast link.
-
+ 
 ---
 # ESP32 Bluetooth-to-UART Full Duplex Bridge
 
