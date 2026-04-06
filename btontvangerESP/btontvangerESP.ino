@@ -31,7 +31,7 @@ void loop() {
   // If we just lost the connection
   if (lastState && !currentState) {
     Serial.println("\n[!] Connection Lost. Rebooting Slave to reset Radio...");
-    delay(1000);
+    delay(100);
     ESP.restart();
   }
   lastState = currentState;
