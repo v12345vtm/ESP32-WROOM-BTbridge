@@ -43,9 +43,40 @@ The "Receiver/Server" that listens for the Master's connection and bridges Bluet
 The "Initiator/Client" that creates the bridge. It requires the Slave's MAC address to be hardcoded for a secure, fast link.
 
 ---
+# ESP32 Bluetooth-to-UART Full Duplex Bridge
+
+This project creates a transparent, wireless **Bluetooth Classic (SPP)** bridge between two ESP32 WROOM modules. It allows you to replace a physical UART/USB cable with a high-speed wireless link.
+
+
 
 ## ⚠️ Troubleshooting & Notes
 * **Grounding:** If connecting to external hardware (not just USB), ensure the **GND** pins of all devices are connected.
 * **Serial Monitor:** Ensure your Serial Monitor is set to **115200 baud** and **"Both NL & CR"** to send data correctly.
 * **Distance:** Bluetooth Classic on the ESP32 works best within 10 meters. For initial testing, keep the boards roughly 1 meter apart.
 * **Power:** If the connection drops frequently, ensure your USB ports provide enough current (Bluetooth can spike power consumption).
+
+## 📡 System Architecture
+
+This bridge operates in **Full Duplex**, meaning both sides can send and receive data at the same time at **115200 8N1**.
+
+```text
+      COMPUTER A                                               COMPUTER B
+   [Serial Monitor]                                         [Serial Monitor]
+          |                                                        |
+          | (USB Cable)                                            | (USB Cable)
+          v                                                        v
++-----------------------+                        +-----------------------+
+|  ESP32 MASTER (WROOM) |                        |  ESP32 SLAVE (WROOM)  |
+|                       |      WIRELESS LINK     |                       |
+|  [ USB-to-UART ]      |       (BT Classic)     |  [ USB-to-UART ]      |
+|         |             |          115200        |         |             |
+|         v             |          8N1           |         v             |
+|  [ Hardware Serial ]  | <~~~~~~~~~~~~~~~~~~~~> |  [ Hardware Serial ]  |
+|         |             |           |            |         |             |
+|         v             |           |            |         v             |
+|  [ BT Stack/Radio  ]  |           |            |  [ BT Stack/Radio  ]  |
++-----------------------+           |            +-----------------------+
+                                    |
+                          (Bidirectional / Full Duplex)
+---
+ 
