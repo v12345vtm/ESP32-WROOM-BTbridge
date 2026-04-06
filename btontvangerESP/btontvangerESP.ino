@@ -1,35 +1,56 @@
-#include "BluetoothSerial.h"
-
+ 
 
 //https://github.com/v12345vtm/ESP32-WROOM-BTbridge/blob/main/btontvangerESP/btontvangerESP.ino
 
 
+
+#include "BluetoothSerial.h"
+
 BluetoothSerial SerialBT;
 
+// Track connection state
+bool lastState = false;
+
 void setup() {
-  Serial.begin(115200); // For your PC Monitor
+  Serial.begin(115200); 
   
-  // Use Pins 16 (RX) and 17 (TX) for the actual data
-  //Serial2.begin(115200, SERIAL_8N1, 16, 17); 
-  
+  // Start Bluetooth as Slave
+  // The name must be what the Master is searching for (if not using MAC)
   SerialBT.begin("ESP32_Bridge_Slave"); 
-  Serial.println("Slave Started. Waiting for Master...to transmit my data");
+  
+  Serial.println("--------------------------------------------------");
+  Serial.println("SLAVE ACTIVE: Waiting for Master connection...");
+  Serial.println("--------------------------------------------------");
 }
 
 void loop() {
-  // 1. Bluetooth to USB (PC)
+  // --- CONNECTION WATCHDOG ---
+  // hasClient() returns true if the Master is currently connected
+  bool currentState = SerialBT.hasClient();
+
+  // If we just lost the connection
+  if (lastState && !currentState) {
+    Serial.println("\n[!] Connection Lost. Rebooting Slave to reset Radio...");
+    delay(1000);
+    ESP.restart();
+  }
+  lastState = currentState;
+
+  // --- DATA BRIDGE ---
+  // 1. Bluetooth (from Master) -> USB (to Field Device)
   if (SerialBT.available()) {
     while (SerialBT.available()) {
       Serial.write(SerialBT.read());
     }
-    Serial.flush(); // Ensure USB buffer is pushed
+    Serial.flush(); 
   }
 
-  // 2. USB (PC) to Bluetooth
+  // 2. USB (from Field Device) -> Bluetooth (to Master)
   if (Serial.available()) {
     while (Serial.available()) {
+      // NOTE: If field data is inverted (84 E4 EC...), 
+      // you can use SerialBT.write(~Serial.read()); here instead.
       SerialBT.write(Serial.read());
     }
-    // No flush needed for BT, it sends automatically after the while loop
   }
 }
