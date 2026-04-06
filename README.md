@@ -14,7 +14,7 @@ This project creates a transparent, wireless **Bluetooth Classic (SPP)** bridge 
 
 ### Step 1: Find the Slave's MAC Address
 Each ESP32 has a unique hardware ID. You must identify the Slave's ID so the Master knows who to "call."
-1. Upload `BT_Mac_Finder.ino` to your **Slave** ESP32.
+1. Upload `BTmacadressFinder.ino` to your **Slave** ESP32.
 2. Open the Serial Monitor (**115200 baud**).
 3. **Copy the generated line** that looks like in the master ino :  
    `uint8_t address[6] = {0xE8, 0x9F, 0x6D, 0xA8, 0x4E, 0xFE};`
