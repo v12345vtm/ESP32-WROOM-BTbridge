@@ -1,36 +1,26 @@
-#include "BluetoothSerial.h"
-
-BluetoothSerial SerialBT;
+void macStringToArray(const char* macStr, uint8_t* macArray) {
+  sscanf(macStr, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+         &macArray[0], &macArray[1], &macArray[2],
+         &macArray[3], &macArray[4], &macArray[5]);
+}
 
 void setup() {
   Serial.begin(115200);
-  // Name your Slave device
-  SerialBT.begin("ESP32_Bridge_Slave");
-  
-  // Wait a moment for the radio to initialize
-  delay(1000);
 
-  // Get the raw MAC address
-  uint8_t mac[6];
-  esp_read_mac(mac, ESP_MAC_BT);
+  const char* macStr = "E8:9F:6D:A8:4E:FE";
+  uint8_t address[6];
 
-  Serial.println("\n--- COPY THE LINE BELOW INTO YOUR MASTER SKETCH ---");
-  
+  macStringToArray(macStr, address);
+
+  // Print nicely
   Serial.print("uint8_t address[6] = {");
   for (int i = 0; i < 6; i++) {
+    if (i > 0) Serial.print(", ");
     Serial.print("0x");
-    if (mac[i] < 0x10) Serial.print("0");
-    Serial.print(mac[i], HEX);
-    if (i < 5) Serial.print(", ");
+    if (address[i] < 16) Serial.print("0"); // leading zero
+    Serial.print(address[i], HEX);
   }
   Serial.println("};");
-  
-  Serial.println("--- END OF COPY ---");
-  Serial.println("\nSlave is now running and discoverable.");
 }
 
-void loop() {
-  // Simple USB to Bluetooth bridge
-  if (SerialBT.available()) { Serial.write(SerialBT.read()); }
-  if (Serial.available()) { SerialBT.write(Serial.read()); }
-}
+void loop() {}
