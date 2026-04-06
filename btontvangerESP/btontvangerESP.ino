@@ -17,11 +17,42 @@ void setup() {
   // Start Bluetooth as Slave
   // The name must be what the Master is searching for (if not using MAC)
   SerialBT.begin("ESP32_Bridge_Slave"); 
-  
+  getBTmacForMaster();//needed to link the master the this esp32
   Serial.println("--------------------------------------------------");
   Serial.println("SLAVE ACTIVE: Waiting for Master connection...");
   Serial.println("--------------------------------------------------");
 }
+
+
+
+
+
+void getBTmacForMaster() {
+  Serial.begin(115200);
+  SerialBT.begin("ESP32_Bridge_Slave");
+
+  String macStr = SerialBT.getBtAddressString();
+
+  uint8_t mac[6];
+
+  // Parse string to byte array
+  sscanf(macStr.c_str(), "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+         &mac[0], &mac[1], &mac[2],
+         &mac[3], &mac[4], &mac[5]);
+
+  // Print in your exact format
+  Serial.print("uint8_t address[6] = {");
+  for (int i = 0; i < 6; i++) {
+    if (i > 0) Serial.print(", ");
+    Serial.print("0x");
+    if (mac[i] < 16) Serial.print("0"); // leading zero
+    Serial.print(mac[i], HEX);
+  }
+  Serial.println("};");
+   Serial.println("THIS LINE MUST BE KNOWN BY THE MASTER");
+}
+
+
 
 void loop() {
   // --- CONNECTION WATCHDOG ---
@@ -30,7 +61,7 @@ void loop() {
 
   // If we just lost the connection
   if (lastState && !currentState) {
-    Serial.println("\n[!] Connection Lost. Rebooting Slave to reset Radio...");
+    Serial.println("\n[!] Connection Lost. Slave is rebooting ...and wait to the Master finds me");
     delay(100);
     ESP.restart();
   }
