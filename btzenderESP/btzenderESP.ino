@@ -11,7 +11,7 @@ uint8_t address[6] = {0x10, 0x06, 0x1C, 0x80, 0x94, 0x72}; //esp met aangelijmde
 
 
 void setup() {
-  Serial.begin(19200);
+  Serial.begin(115200);
 
 
 //printSLavetoConnectto();
