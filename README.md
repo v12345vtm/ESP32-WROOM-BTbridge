@@ -14,7 +14,7 @@ This project creates a transparent, wireless **Bluetooth Classic (SPP)** bridge 
 
 ### Step 1: Find the Slave's MAC Address
 Each ESP32 has a unique hardware ID. You must identify the Slave's ID so the Master knows who to "call."
-1. Upload `BTmacadressFinder.ino` to your **Slave** ESP32.
+1. Upload `btontvangerESP/btontvangerESP.ino` to your **Slave** ESP32.
 2. Open the Serial Monitor (**115200 baud**).
 3. **Copy the generated line** that looks like in the master ino :  
    `uint8_t address[6] = {0xE8, 0x9F, 0x6D, 0xA8, 0x4E, 0xFE};`
@@ -35,14 +35,16 @@ Each ESP32 has a unique hardware ID. You must identify the Slave's ID so the Mas
 ---
 # ESP32 Bluetooth-to-UART Full Duplex Bridge
 
-This project creates a transparent, wireless **Bluetooth Classic (SPP)** bridge between two ESP32 WROOM modules. It allows you to replace a physical UART/USB cable with a high-speed wireless link.
+This project creates a transparent, wireless **Bluetooth Classic (SPP)** bridge between two ESP32 WROOM modules. It allows you to replace a physical UART/USB cable with a high-speed wireless link. 
+Tested to send and recieve OBIS P1 meter protokol , at 115200 speed and fine
+Distance is very close stay within 4 meters 
 
 
 
 ## ⚠️ Troubleshooting & Notes
 * **Reset both esp32 's:** when starting , maybe clear all old bits and get a fresh new boot start.
 * **Serial Monitor:** Ensure your Serial Monitor is set to **115200 baud** and **"Both NL & CR"** to send data correctly.
-* **Distance:** Bluetooth Classic on the ESP32 works best within 10 meters. For initial testing, keep the boards roughly 1 meter apart.
+* **Distance:** Bluetooth Classic on the ESP32 works best within 4 meters. For initial testing, keep the boards roughly 1 meter apart.
 * **Power:** If the connection drops frequently, ensure your USB ports provide enough current (Bluetooth can spike power consumption).
 
 ## 📡 System Architecture
