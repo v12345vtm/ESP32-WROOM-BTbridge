@@ -5,6 +5,7 @@
 
 
 #include "BluetoothSerial.h"
+ 
 
 BluetoothSerial SerialBT;
 
@@ -30,6 +31,8 @@ void setup() {
 void getBTmacForMaster() {
   Serial.begin(115200);
   SerialBT.begin("ESP32_Bridge_Slave");
+
+ 
 
   String macStr = SerialBT.getBtAddressString();
 

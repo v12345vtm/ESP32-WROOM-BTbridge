@@ -1,6 +1,7 @@
 #include "BluetoothSerial.h"
+ 
 //https://github.com/v12345vtm/ESP32-WROOM-BTbridge/blob/main/btzenderESP/btzenderESP.ino
-
+ 
 
 BluetoothSerial SerialBT;
 
@@ -20,19 +21,21 @@ void setup() {
 
 
 
-
     // Use Pins 16 (RX) and 17 (TX) for the actual data
   //Serial2.begin(115200, SERIAL_8N1, 16, 17); 
   
   // Start Bluetooth in Master Mode
   SerialBT.begin("ESP32_Bridge_Master", true); 
+
+ 
+
   Serial.println("Master Radio Initialized.Keep this ESP32 with your logging PC");
   delay(2000); // Warm-up delay for voltage stability
 
   bool connected = false;
   int attempt = 0;
 
-  Serial.println("Starting Persistent Search for Slave...");
+  Serial.println("Start Searching for my Slave...");
 
   // SEARCH LOOP: Will not leave setup() until Slave is found
   while (!connected) {
