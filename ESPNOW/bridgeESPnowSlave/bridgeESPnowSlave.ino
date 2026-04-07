@@ -1,67 +1,82 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-bool dataReceivedRecently = true;
-unsigned long lastReceiveTime = 0;
+uint8_t masterAddress[6] = {0x94, 0x51, 0xDC, 0x4B, 0x61, 0xF4};
 
-// Callback when data received from Master
-void onDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
-  lastReceiveTime = millis();
+#define ESPNOW_CHANNEL 1
+#define BUF_SIZE 240
 
-  for (int i = 0; i < len; i++) {
-    Serial.write(incomingData[i]);
-  }
-  Serial.flush();
+unsigned long lastPacketTime = 0;
+
+// ================= CALLBACKS =================
+
+void onDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
+  lastPacketTime = millis();
+
+  // ESP-NOW → UART
+  Serial.write(data, len);
 }
 
 void onDataSent(const wifi_tx_info_t *info, esp_now_send_status_t status) {
   if (status != ESP_NOW_SEND_SUCCESS) {
-    Serial.println("[!] Send Failed → Restarting...");
-    ESP.restart();
+    Serial.println("[SLAVE] Send FAIL");
   }
 }
 
-uint8_t masterAddress[6]; // learned automatically
+// ================= SETUP =================
 
 void setup() {
   Serial.begin(115200);
 
   WiFi.mode(WIFI_STA);
+  WiFi.setChannel(ESPNOW_CHANNEL);
   WiFi.disconnect();
 
-  Serial.println("ESP-NOW SLAVE STARTING...");
+  Serial.println("\n[SLAVE] Starting...");
+  Serial.println("slaveMAC: " + WiFi.macAddress());
 
   if (esp_now_init() != ESP_OK) {
-    Serial.println("ESP-NOW Init Failed → Restarting...");
+    Serial.println("ESP-NOW init failed");
     ESP.restart();
   }
 
   esp_now_register_recv_cb(onDataRecv);
   esp_now_register_send_cb(onDataSent);
 
-  Serial.println("--------------------------------------------------");
-  Serial.println("SLAVE ACTIVE: Waiting for Master...");
-  Serial.println("--------------------------------------------------");
+  esp_now_peer_info_t peer = {};
+  memcpy(peer.peer_addr, masterAddress, 6);
+  peer.channel = ESPNOW_CHANNEL;
+  peer.encrypt = false;
+  peer.ifidx = WIFI_IF_STA;
 
-  // Print own MAC (like your BT version)
-  Serial.print("My MAC: ");
-  Serial.println(WiFi.macAddress());
-}
-
-void loop() {
-  // --- WATCHDOG (if no data for 10 sec → restart) ---
-  if (millis() - lastReceiveTime > 10000) {
-    Serial.println("[!] No Master activity → Restarting...");
-    delay(100);
+  if (esp_now_add_peer(&peer) != ESP_OK) {
+    Serial.println("Peer add failed");
     ESP.restart();
   }
-lastReceiveTime = millis();
-  // --- UART → ESP-NOW ---
-  if (Serial.available()) {
-    uint8_t buffer[250];
-    int len = Serial.readBytes(buffer, sizeof(buffer));
 
-    // Send back to last sender (auto-learn)
-    esp_now_send(NULL, buffer, len); // broadcast or last peer
+  lastPacketTime = millis();
+
+  Serial.println("[SLAVE] READY");
+}
+
+// ================= LOOP =================
+
+void loop() {
+  // UART → ESP-NOW
+  if (Serial.available()) {
+    uint8_t buf[BUF_SIZE];
+    int len = Serial.readBytes(buf, BUF_SIZE);
+
+    esp_err_t result = esp_now_send(masterAddress, buf, len);
+
+    if (result != ESP_OK) {
+      Serial.println("[SLAVE] Send error");
+    }
+  }
+
+  // Optional watchdog (safe, no bootloop)
+  if (millis() - lastPacketTime > 30000) {
+    Serial.println("[SLAVE] No traffic...");
+    lastPacketTime = millis();
   }
 }
